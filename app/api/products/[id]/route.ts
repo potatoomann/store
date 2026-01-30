@@ -7,10 +7,10 @@ import { badRequest, notFound, ok, requireAdmin } from "@/lib/api";
    ========================= */
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         if (!id) return badRequest("Missing id");
 
@@ -35,13 +35,13 @@ export async function GET(
    ========================= */
 export async function PUT(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const guard = await requireAdmin(req);
         if (guard) return guard;
 
-        const { id } = params;
+        const { id } = await params;
         if (!id) return badRequest("Missing id");
 
         const body = await req.json();
@@ -88,13 +88,13 @@ export async function PUT(
    ========================= */
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const guard = await requireAdmin(req);
         if (guard) return guard;
 
-        const { id } = params;
+        const { id } = await params;
         if (!id) return badRequest("Missing id");
 
         await prisma.orderItem.deleteMany({
