@@ -26,13 +26,13 @@ interface CartState {
     total: () => number;
 }
 
-const storage = createJSONStorage<CartState>(() => {
+const storage = createJSONStorage(() => {
     if (typeof window === 'undefined') {
         // SSR-safe no-op storage
         return {
             getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {},
+            setItem: () => { },
+            removeItem: () => { },
         } as unknown as Storage;
     }
     return window.localStorage;
@@ -115,7 +115,7 @@ export const useCartStore = create<CartState>()(
         }),
         {
             name: "cart-storage",
-            storage,
+            storage: storage as any,
             partialize: (state) => ({ items: state.items, isOpen: state.isOpen }),
         }
     )

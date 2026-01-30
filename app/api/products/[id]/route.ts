@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { badRequest, notFound, ok, requireAdmin } from "@/lib/api";
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const { id } = await params;
+        const { id } = params;
         if (!id) return badRequest('Missing id');
         const product = await prisma.product.findUnique({ where: { id } });
         if (!product) return notFound("Product not found");
@@ -14,11 +14,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
 }
 
-export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const guard = await requireAdmin(req);
         if (guard) return guard;
-        const { id } = await params;
+        const { id } = params;
         const body = await req.json();
 
         const price = Number(body.price);
@@ -49,11 +49,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const guard = await requireAdmin(req);
         if (guard) return guard;
-        const { id } = await params;
+        const { id } = params;
 
         await prisma.orderItem.deleteMany({ where: { productId: id } });
         await prisma.product.delete({ where: { id } });

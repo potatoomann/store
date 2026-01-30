@@ -6,9 +6,9 @@ import { badRequest, ok, rateLimit, generateOpaqueToken, hashToken } from '@/lib
 export async function POST(req: Request) {
     try {
         const ip = req.headers.get('x-forwarded-for') || 'local';
-        const rl = rateLimit(`forgot:${ip}` , 5, 60_000);
+        const rl = rateLimit(`forgot:${ip}`, 5, 60_000);
         if (!rl.allowed) {
-            const retryAfter = 'retryAfter' in rl ? rl.retryAfter : 0;
+            const retryAfter = 'retryAfter' in rl ? (rl as any).retryAfter : 0;
             return NextResponse.json(
                 { error: 'Too many requests' },
                 { status: 429, headers: { 'Retry-After': String(Math.ceil(retryAfter / 1000)) } }
