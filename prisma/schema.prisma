@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  productNumber String?   // Visual ID
+  name        String
+  price       Float
+  description String
+  image       String
+  category    String
+  team        String
+  stock       Int         @default(0)
+  sizes       String?     // Comma separated sizes e.g. "S,M,L,XL"
+  featured    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  customer  String?     // JSON or simple string for now
+  total     Float
+  status    String      @default("PENDING") // PENDING, PAID, SHIPPED
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Float   // Snapshot price at time of order
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  phone     String?
+  address   String?
+  resetToken String?
+  resetTokenExpiry DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SystemEvent {
+  id        String   @id @default(cuid())
+  type      String   // INFO, WARNING, ERROR, SUCCESS
+  message   String
+  metadata  String?  // JSON string
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
