@@ -32,7 +32,7 @@ export async function GET() {
         }
 
         // Aggregate order totals
-        orders.forEach(order => {
+        orders.forEach((order: { createdAt: Date; total: number }) => {
             const dateStr = new Date(order.createdAt).toLocaleDateString("en-US", { day: "numeric", month: "short" });
             if (salesMap.has(dateStr)) {
                 salesMap.set(dateStr, (salesMap.get(dateStr) || 0) + order.total);
